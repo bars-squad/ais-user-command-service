@@ -1,7 +1,7 @@
 package admin
 
 import (
-	"github.com/difaal21/go-template/jwt"
+	"github.com/bars-squad/ais-user-command-service/jwt"
 	"github.com/sirupsen/logrus"
 )
 

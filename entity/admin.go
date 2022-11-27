@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/difaal21/go-template/model"
+	"github.com/bars-squad/ais-user-command-service/model"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 

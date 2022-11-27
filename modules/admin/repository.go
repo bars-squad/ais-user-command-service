@@ -3,9 +3,9 @@ package admin
 import (
 	"context"
 
-	"github.com/difaal21/go-template/databases/mongodb"
-	"github.com/difaal21/go-template/entity"
-	"github.com/difaal21/go-template/exception"
+	"github.com/bars-squad/ais-user-command-service/databases/mongodb"
+	"github.com/bars-squad/ais-user-command-service/entity"
+	"github.com/bars-squad/ais-user-command-service/exception"
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"

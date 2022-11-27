@@ -3,7 +3,7 @@ package middleware
 import (
 	"net/http"
 
-	"github.com/difaal21/go-template/responses"
+	"github.com/bars-squad/ais-user-command-service/responses"
 )
 
 const (

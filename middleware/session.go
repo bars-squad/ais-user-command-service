@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/difaal21/go-template/entity"
-	"github.com/difaal21/go-template/jwt"
-	"github.com/difaal21/go-template/model"
-	"github.com/difaal21/go-template/responses"
+	"github.com/bars-squad/ais-user-command-service/entity"
+	"github.com/bars-squad/ais-user-command-service/jwt"
+	"github.com/bars-squad/ais-user-command-service/model"
+	"github.com/bars-squad/ais-user-command-service/responses"
 )
 
 var (

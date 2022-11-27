@@ -1,7 +1,7 @@
 package cryptography
 
 import (
-	"github.com/difaal21/go-template/exception"
+	"github.com/bars-squad/ais-user-command-service/exception"
 	"golang.org/x/crypto/bcrypt"
 )
 

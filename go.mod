@@ -1,4 +1,4 @@
-module github.com/difaal21/go-template
+module github.com/bars-squad/ais-user-command-service
 
 go 1.19
 
