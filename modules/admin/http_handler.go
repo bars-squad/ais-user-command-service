@@ -2,7 +2,9 @@ package admin
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/bars-squad/ais-user-command-service/helpers/validation"
 	"github.com/bars-squad/ais-user-command-service/middleware"
@@ -63,7 +65,8 @@ func (handler *HTTPHandler) Login(w http.ResponseWriter, r *http.Request) {
 		responses.REST(w, httpResponse.BadRequest("").NewResponses(err, badRequestMessage))
 		return
 	}
-
+	payload.Email = strings.ToLower(payload.Email)
+	fmt.Println("payload", payload)
 	resp := handler.Usecase.Login(ctx, payload)
 	responses.REST(w, resp)
 }
@@ -99,6 +102,7 @@ func (handler *HTTPHandler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	payload.Email = strings.ToLower(payload.Email)
 	resp := handler.Usecase.Register(ctx, payload)
 	responses.REST(w, resp)
 }
