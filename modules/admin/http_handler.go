@@ -36,8 +36,8 @@ func NewHTTPHandler(logger *logrus.Logger, validate *validator.Validate, router 
 		Usecase:  usecase,
 	}
 
-	router.HandleFunc("/v1/admin/login", basicAuth.Verify(handler.Login)).Methods(http.MethodPost)
-	router.HandleFunc("/v1/admin/registration", sess.Verify(handler.Register)).Methods(http.MethodPost)
+	router.HandleFunc("/user-command/v1/administrators/login", basicAuth.Verify(handler.Login)).Methods(http.MethodPost)
+	router.HandleFunc("/user-command/v1/administrators/registration", sess.Verify(handler.Register)).Methods(http.MethodPost)
 	// router.HandleFunc("/mpv-general-registration/v1/users/registration/{nationalityId}", basicAuth.Verify(handler.GetUser)).Methods(http.MethodGet)
 	// router.HandleFunc("/mpv-general-registration/v1/users/registration/{nationalityId}/subsidy-product/{subsidyProduct}", basicAuth.Verify(handler.GetUserByNationalityIDAndSubsidyProduct)).Methods(http.MethodGet)
 }

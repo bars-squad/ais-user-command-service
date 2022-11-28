@@ -63,7 +63,7 @@ func main() {
 	sessionMiddleware := middleware.NewSessionMiddleware(jsonWebToken)
 
 	router := mux.NewRouter()
-	router.HandleFunc("/", index)
+	router.HandleFunc("/user-command", index)
 	// http.Handle("/", router)
 	router.NotFoundHandler = http.HandlerFunc(notFoundHandler)
 
