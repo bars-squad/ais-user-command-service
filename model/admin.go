@@ -15,7 +15,7 @@ type AdminSuccessLogin struct {
 type AdminRegistration struct {
 	Name     string `validate:"required" json:"name"`
 	Email    string `validate:"required,email" json:"email"`
-	Password string `validate:"required" json:"password"`
+	Password string `validate:"required,min=6" json:"password"`
 	Role     string `validate:"required" json:"role"`
 }
 

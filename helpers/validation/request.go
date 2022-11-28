@@ -17,13 +17,13 @@ func RequestBody(handler *validator.Validate, body interface{}) interface{} {
 		return nil
 	}
 
-	errorFields := err.(validator.ValidationErrors)
+	validationErrors := err.(validator.ValidationErrors)
 	var invalid []*InvalidSchema
 
-	for _, errorField := range errorFields {
+	for _, errorField := range validationErrors {
 		invalid = append(invalid, &InvalidSchema{
 			Field:   errorField.Field(),
-			Message: fmt.Sprintf("invalid '%s' with value '%v'", errorField.Field(), errorField.Value()),
+			Message: fmt.Sprintf("invalid '%s' on tag '%q' with value '%v'", errorField.Field(), errorField.Tag(), errorField.Value()),
 		})
 	}
 	return invalid
