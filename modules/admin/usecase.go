@@ -2,7 +2,6 @@ package admin
 
 import (
 	"context"
-	"time"
 
 	"github.com/bars-squad/ais-user-command-service/entity"
 	"github.com/bars-squad/ais-user-command-service/exception"
@@ -68,11 +67,11 @@ func NewUsecase(property *Property) Usecase {
 func (u UsecaseImpl) Register(ctx context.Context, param *model.AdminRegistration) responses.Responses {
 	var admin entity.Admin
 
-	createdBy, err := entity.GetAdministratorFromContext(ctx)
+	/* createdBy, err := entity.GetAdministratorFromContext(ctx)
 	if err != nil {
 		u.Logger.Error(err.Error())
 		return httpResponses.InternalServerError("").NewResponses(nil, internalServerErrorMessage)
-	}
+	} */
 
 	isAdminExist, err := u.Repository.FindOneByEmail(ctx, param.Email)
 	if err != nil {
@@ -100,9 +99,9 @@ func (u UsecaseImpl) Register(ctx context.Context, param *model.AdminRegistratio
 	admin.CreatedAt = date.CurrentUTCTime()
 	admin.Password = hashPassword
 	admin.Role = param.Role
-	admin.CreatedBy.UserID = createdBy.ID
-	admin.CreatedBy.Name = createdBy.Name
-	admin.CreatedBy.Email = createdBy.Email
+	admin.CreatedBy.UserID = param.CreatedBy.ID
+	admin.CreatedBy.Email = param.CreatedBy.Email
+	admin.CreatedBy.Name = param.CreatedBy.Name
 
 	if err = u.Repository.Save(ctx, &admin); err != nil {
 		u.Logger.Error(err)
@@ -111,11 +110,11 @@ func (u UsecaseImpl) Register(ctx context.Context, param *model.AdminRegistratio
 
 	admin.Password = nil
 
-	return httpResponses.Ok("").NewResponses(admin, createAdminSuccessMessage)
+	return httpResponses.Created("").NewResponses(admin, createAdminSuccessMessage)
 }
 
 func (u UsecaseImpl) Login(ctx context.Context, param *model.AdminLogin) responses.Responses {
-	var token model.Token
+	// var token model.Token
 	var profile model.AdminSuccessLogin
 
 	var admin, err = u.Repository.FindOneByEmail(ctx, param.Email)
@@ -137,26 +136,26 @@ func (u UsecaseImpl) Login(ctx context.Context, param *model.AdminLogin) respons
 		return httpResponses.BadRequest("").NewResponses(nil, invalidCredentialMessage)
 	}
 
-	expiresAt := time.Now().Add(time.Hour * 24 * 7).Unix()
+	/* expiresAt := time.Now().Add(time.Hour * 24 * 7).Unix()
 	claims := &model.AdminBearer{}
 	claims.ID = admin.ID
 	claims.Name = admin.Name
 	claims.Email = admin.Email
-	claims.ExpiresAt = expiresAt
+	claims.ExpiresAt = expiresAt */
 
-	tokenString, err := u.JSONWebToken.Sign(ctx, claims)
+	/* tokenString, err := u.JSONWebToken.Sign(ctx, claims)
 	if err != nil {
 		u.Logger.WithFields(logrus.Fields{"body": param}).Error(err.Error())
 		return httpResponses.InternalServerError("").NewResponses(nil, err.Error())
 	}
 
 	token.Value = &tokenString
-	token.ExpiresIn = 60 * 60 * 24 * 7
+	token.ExpiresIn = 60 * 60 * 24 * 7 */
 
-	profile.Email = admin.Email
+	profile.ID = admin.ID
 	profile.Name = admin.Name
+	profile.Email = admin.Email
 	profile.Role = admin.Role
-	profile.Token = &token
 
 	return httpResponses.Ok("").NewResponses(profile, loginSucessMessage)
 }

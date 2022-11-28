@@ -2,7 +2,6 @@ package admin
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -39,7 +38,7 @@ func NewHTTPHandler(logger *logrus.Logger, validate *validator.Validate, router 
 	}
 
 	router.HandleFunc("/user-command/v1/administrators/login", basicAuth.Verify(handler.Login)).Methods(http.MethodPost)
-	router.HandleFunc("/user-command/v1/administrators/registration", sess.Verify(handler.Register)).Methods(http.MethodPost)
+	router.HandleFunc("/user-command/v1/administrators/registration", basicAuth.Verify(handler.Register)).Methods(http.MethodPost)
 	// router.HandleFunc("/mpv-general-registration/v1/users/registration/{nationalityId}", basicAuth.Verify(handler.GetUser)).Methods(http.MethodGet)
 	// router.HandleFunc("/mpv-general-registration/v1/users/registration/{nationalityId}/subsidy-product/{subsidyProduct}", basicAuth.Verify(handler.GetUserByNationalityIDAndSubsidyProduct)).Methods(http.MethodGet)
 }
@@ -66,7 +65,6 @@ func (handler *HTTPHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	payload.Email = strings.ToLower(payload.Email)
-	fmt.Println("payload", payload)
 	resp := handler.Usecase.Login(ctx, payload)
 	responses.REST(w, resp)
 }

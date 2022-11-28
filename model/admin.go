@@ -6,17 +6,25 @@ import (
 )
 
 type AdminSuccessLogin struct {
-	Name  string `json:"name"`
-	Email string `json:"email"`
-	Role  string `json:"role"`
-	Token *Token `json:"token"`
+	ID    primitive.ObjectID `json:"id"`
+	Name  string             `json:"name"`
+	Email string             `json:"email"`
+	Role  string             `json:"role"`
+	// Token *Token             `json:"token"`
 }
 
 type AdminRegistration struct {
-	Name     string `validate:"required" json:"name"`
-	Email    string `validate:"required,email" json:"email"`
-	Password string `validate:"required,min=6" json:"password"`
-	Role     string `validate:"required" json:"role"`
+	Name      string    `validate:"required" json:"name"`
+	Email     string    `validate:"required,email" json:"email"`
+	Password  string    `validate:"required,min=6" json:"password"`
+	Role      string    `validate:"required" json:"role"`
+	CreatedBy CreatedBy `validate:"required" json:"createdBy"`
+}
+
+type CreatedBy struct {
+	ID    primitive.ObjectID `validate:"required" json:"id"`
+	Name  string             `validate:"required" json:"name"`
+	Email string             `validate:"required" json:"email"`
 }
 
 type AdminLogin struct {
