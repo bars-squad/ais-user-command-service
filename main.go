@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/bars-squad/ais-user-command-service/config"
 	"github.com/bars-squad/ais-user-command-service/databases/mongodb"
@@ -14,7 +15,9 @@ import (
 	"github.com/bars-squad/ais-user-command-service/modules/admin"
 	"github.com/bars-squad/ais-user-command-service/responses"
 	"github.com/bars-squad/ais-user-command-service/server"
+	"github.com/bars-squad/ais-user-command-service/session"
 	"github.com/go-playground/validator"
+	rv8 "github.com/go-redis/redis/v8"
 	"github.com/gorilla/mux"
 	_ "github.com/joho/godotenv/autoload" //for development
 	"github.com/rs/cors"
@@ -49,6 +52,15 @@ func main() {
 		logger.Fatal(err)
 	}
 
+	// set redis object
+	rdb := rv8.NewClient(cfg.Redis.Options)
+	if _, err := rdb.Ping(context.Background()).Result(); err != nil {
+		logger.Fatal(err)
+	}
+	// rdb.AddHook(hook.NewAPMRedisHook())
+
+	// set session object
+	sess := session.NewRedisSessionStoreAdapter(rdb, time.Hour*24*7, "user.profile")
 	// set mongodb
 	mongodb := mongoClientAdapter.Database(cfg.Mongodb.Database)
 
@@ -74,7 +86,7 @@ func main() {
 		Logger:       logger,
 		Repository:   adminRepository,
 		JSONWebToken: jsonWebToken,
-		// Session:      sess,
+		Session:      sess,
 		// Publisher:                publisher,
 	})
 

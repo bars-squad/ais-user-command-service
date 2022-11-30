@@ -1,6 +1,7 @@
 package config
 
 import (
+	"crypto/tls"
 	"fmt"
 	"os"
 	"runtime"
@@ -8,11 +9,15 @@ import (
 	"strings"
 	"time"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type Config struct {
+	Redis struct {
+		Options *redis.Options
+	}
 	Logger struct {
 		Formatter logrus.Formatter
 	}
@@ -101,5 +106,31 @@ func Load() *Config {
 	cfg.basicAuth()
 	cfg.logFormatter()
 	cfg.mongodb()
+	cfg.redis()
 	return cfg
+}
+
+func (cfg *Config) redis() {
+	var tlscfg *tls.Config
+	host := os.Getenv("REDIS_HOST")
+	port := os.Getenv("REDIS_PORT")
+	username := os.Getenv("REDIS_USERNAME")
+	password := os.Getenv("REDIS_PASSWORD")
+	db, _ := strconv.ParseInt(os.Getenv("REDIS_DATABASE"), 10, 64)
+	sslEnable, _ := strconv.ParseBool(os.Getenv("REDIS_SSL_ENABLE"))
+
+	if sslEnable {
+		tlscfg = &tls.Config{}
+		tlscfg.ServerName = host
+	}
+
+	options := &redis.Options{
+		Addr:      fmt.Sprintf("%s:%s", host, port),
+		Username:  username,
+		Password:  password,
+		DB:        int(db),
+		TLSConfig: tlscfg,
+	}
+
+	cfg.Redis.Options = options
 }
