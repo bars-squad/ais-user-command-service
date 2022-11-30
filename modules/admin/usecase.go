@@ -2,6 +2,7 @@ package admin
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/bars-squad/ais-user-command-service/entity"
 	"github.com/bars-squad/ais-user-command-service/exception"
@@ -10,6 +11,7 @@ import (
 	"github.com/bars-squad/ais-user-command-service/jwt"
 	"github.com/bars-squad/ais-user-command-service/model"
 	"github.com/bars-squad/ais-user-command-service/responses"
+	"github.com/bars-squad/ais-user-command-service/session"
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -23,10 +25,12 @@ const (
 )
 
 const (
-	userAlreadyExistMessage   = "User already exist"
-	createAdminSuccessMessage = "Successfully created an account"
-	invalidCredentialMessage  = "Invalid admin credential"
-	loginSucessMessage        = "Login success"
+	userAlreadyExistMessage          = "User already exist"
+	createAdminSuccessMessage        = "Successfully created an account"
+	invalidCredentialMessage         = "Invalid admin credential"
+	loginSucessMessage               = "Login success"
+	verificationUnexpectedErrMessage = "An error occurred while verify user"
+	uneligibleRegisteredMessage      = "Uneligible to registered an account"
 )
 
 type Usecase interface {
@@ -44,13 +48,13 @@ type Usecase interface {
 }
 
 type UsecaseImpl struct {
-	ServiceName string
-	Logger      *logrus.Logger
-	Repository  Repository
-	// SubsidyProductRepository subsidyproduct.Repository
+	ServiceName  string
+	Logger       *logrus.Logger
+	Repository   Repository
 	JSONWebToken *jwt.JSONWebToken
-	// Session                  session.Session
+	Session      session.Session
 	// Publisher                pubsub.Publisher
+	// SubsidyProductRepository subsidyproduct.Repository
 }
 
 func NewUsecase(property *Property) Usecase {
@@ -59,19 +63,13 @@ func NewUsecase(property *Property) Usecase {
 		Logger:       property.Logger,
 		Repository:   property.Repository,
 		JSONWebToken: property.JSONWebToken,
-		// sess:                     property.Session,
+		Session:      property.Session,
 		// publisher:                property.Publisher,
 	}
 }
 
 func (u UsecaseImpl) Register(ctx context.Context, param *model.AdminRegistration) responses.Responses {
 	var admin entity.Admin
-
-	/* createdBy, err := entity.GetAdministratorFromContext(ctx)
-	if err != nil {
-		u.Logger.Error(err.Error())
-		return httpResponses.InternalServerError("").NewResponses(nil, internalServerErrorMessage)
-	} */
 
 	isAdminExist, err := u.Repository.FindOneByEmail(ctx, param.Email)
 	if err != nil {
@@ -134,6 +132,12 @@ func (u UsecaseImpl) Login(ctx context.Context, param *model.AdminLogin) respons
 	passwordMatch := cryptography.Verify(admin.Password.(string), []byte(param.Password))
 	if !passwordMatch {
 		return httpResponses.BadRequest("").NewResponses(nil, invalidCredentialMessage)
+	}
+
+	adminBuff, _ := json.Marshal(admin)
+	if err := u.Session.Set(ctx, admin.ID.Hex(), adminBuff); err != nil {
+		u.Logger.Error(err.Error())
+		return httpResponses.InternalServerError("").NewResponses(nil, internalServerErrorMessage)
 	}
 
 	/* expiresAt := time.Now().Add(time.Hour * 24 * 7).Unix()
