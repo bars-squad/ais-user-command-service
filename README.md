@@ -5,7 +5,7 @@ User commands are services that are responsible for handling user information.
 Getting Started
 
 ```
-go mod download       # Install dependecy
+go mod download       # Install dependency
 go run main.go        # Running server on port 5002
 ```
 
