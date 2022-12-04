@@ -19,7 +19,7 @@ COPY . ./
 RUN go build main.go
 
 # Expose port
-EXPOSE 5001
+EXPOSE 5002
 
 # Execute program
 CMD [ "/main" ]
